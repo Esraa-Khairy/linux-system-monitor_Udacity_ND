@@ -18,6 +18,7 @@ const std::string kVersionFilename{"/version"};
 const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
 
+static std::vector<long> jiffies;
 // System
 float MemoryUtilization();
 long UpTime();
