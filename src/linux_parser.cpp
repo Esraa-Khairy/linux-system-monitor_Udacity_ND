@@ -6,8 +6,10 @@
 #include <unistd.h>
 
 #include "linux_parser.h"
-//#include <filesystem>
 
+#include <sys/sysinfo.h>
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
 using std::stof;
 using std::string;
 using std::to_string;
@@ -56,32 +58,32 @@ vector<int> LinuxParser::Pids() {
   vector<int> pids;
 
   
-//   for (const auto& entry : fs::directory_iterator(kProcDirectory))
-//   {
-//     if (fs::is_directory(entry))
-//     {
-//       string dirName = entry.path().file_name();
-//       if(std::all_of(dirName.begin(), dirName.end(),::isdigit))
-//       {
-//         pids.push_back(stoi(dirName));
-//       }
-
-//     }
-//   }
-  DIR* directory = opendir(kProcDirectory.c_str());
-  struct dirent* file;
-  while ((file = readdir(directory)) != nullptr) {
-    // Is this a directory?
-    if (file->d_type == DT_DIR) {
-      // Is every character of the name a digit?
-      string filename(file->d_name);
-      if (std::all_of(filename.begin(), filename.end(), isdigit)) {
-        int pid = stoi(filename);
-        pids.push_back(pid);
+  for (const auto& entry : fs::directory_iterator(kProcDirectory))
+  {
+    if (fs::is_directory(entry))
+    {
+      string dirName = entry.path().filename();
+      if(std::all_of(dirName.begin(), dirName.end(),::isdigit))
+      {
+        pids.push_back(stoi(dirName));
       }
+
     }
   }
-  closedir(directory);
+//   DIR* directory = opendir(kProcDirectory.c_str());
+//   struct dirent* file;
+//   while ((file = readdir(directory)) != nullptr) {
+//     // Is this a directory?
+//     if (file->d_type == DT_DIR) {
+//       // Is every character of the name a digit?
+//       string filename(file->d_name);
+//       if (std::all_of(filename.begin(), filename.end(), isdigit)) {
+//         int pid = stoi(filename);
+//         pids.push_back(pid);
+//       }
+//     }
+//   }
+//   closedir(directory);
   return pids;
 }
 
@@ -133,7 +135,6 @@ long LinuxParser::Jiffies() {
   //user,nice,system,idle,iowait,irq,softirq,steal,guest,guest_nice;
   string value;
   long lValue;
-
   long total = 0;
 
   LinuxParser::jiffies.clear();
@@ -154,10 +155,6 @@ long LinuxParser::Jiffies() {
   }
   return total; 
 }
-
-// TODO: Read and return the number of active jiffies for a PID
-// REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
 
 // TODO: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() {
@@ -190,8 +187,6 @@ vector<string> LinuxParser::CpuUtilization() {
   string line,cpu;
   string value;
 
-  long total = 0;
-
   std::vector<string> jiffies__;
 
   std::ifstream fileStream (kProcDirectory + kStatFilename);
@@ -214,9 +209,9 @@ vector<string> LinuxParser::CpuUtilization() {
 // TODO: Read and return the total number of processes
 int LinuxParser::TotalProcesses() { 
 
-  string key;
-  string value;
-  string line;
+  string key = " ";
+  string value = " ";
+  string line = " ";
 
 
   std::ifstream fileStream (kProcDirectory + kStatFilename);
@@ -231,19 +226,19 @@ int LinuxParser::TotalProcesses() {
         if (key == "processes" )
         {
           lineStream >> value;
-          return stoi(value);
         }
       }
     }   
   }
+  return stoi(value);
 }
 
 // TODO: Read and return the number of running processes
 int LinuxParser::RunningProcesses() { 
 
-  string key;
-  string value;
-  string line;
+  string key = " ";
+  string value = " ";
+  string line = " ";
 
 
   std::ifstream fileStream (kProcDirectory + kStatFilename);
@@ -258,11 +253,12 @@ int LinuxParser::RunningProcesses() {
         if (key == "procs_running" )
         {
           lineStream >> value;
-          return stoi(value);
+          
         }
       }
     }   
   }
+  return stoi(value);
 }
 
 // Read and return the command associated with a process

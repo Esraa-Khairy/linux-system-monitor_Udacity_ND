@@ -12,6 +12,8 @@ add_executable(monitor ${SOURCES})
 set_property(TARGET monitor PROPERTY CXX_STANDARD 17)
 target_link_libraries(monitor ${CURSES_LIBRARIES})
 
+target_link_libraries(monitor stdc++fs)
+
 # Enable warnings
 target_compile_options(monitor PRIVATE -Wall -Wextra)
 
