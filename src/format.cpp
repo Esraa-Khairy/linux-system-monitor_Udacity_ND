@@ -19,12 +19,9 @@ string Format::ElapsedTime(long seconds)
     string MM_str = std::to_string(MM);
     string SS_str = std::to_string(SS);
 
-
-
-
-    HH_str.insert(0, 2 - HH_str.length(), '0');
-    MM_str.insert(0, 2 - MM_str.length(), '0');
-    SS_str.insert(0, 2 - SS_str.length(), '0');
+    if(HH_str.length() < 2)HH_str.insert(0, 2 - HH_str.length(), '0');
+    if(MM_str.length() < 2)MM_str.insert(0, 2 - MM_str.length(), '0');
+    if(SS_str.length() < 2)SS_str.insert(0, 2 - SS_str.length(), '0');
 
     return HH_str + ":" + MM_str + ":" + SS_str;
     
